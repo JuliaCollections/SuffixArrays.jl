@@ -1,5 +1,8 @@
 module SuffixArrays
 
-# package code goes here
+export suffixsort
+
+include("sais.jl")
+
 
 end # module
