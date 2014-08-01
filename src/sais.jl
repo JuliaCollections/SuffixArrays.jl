@@ -44,7 +44,7 @@ function suffixsort(s)
     isempty(s) && return [-1]
     SA = zeros(Int,n);
     n <= 1 && return SA
-    return sais(s, SA, 0, n, 256, false)
+    return sais(s, SA, 0, n, isascii(s) ? 256 : 65536, false)
 end
 
 function getcounts(T,C,n,k)
