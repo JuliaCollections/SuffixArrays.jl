@@ -12,7 +12,7 @@ sa = suffixsort("banana")
 sa.index # access the underlying sorted suffix array; returned indices are currently 0-based
 ```
 
-This package is brand new (8/2/2014) and will probably go through some more iterating, but performance is already impressive being 10x faster than the Java `sais` implementation and about 1.3 the native C version.
+This package is brand new (8/2/2014) and will probably go through some more iterating, but performance is already impressive being 10x faster than the Java `sais` implementation and about 1.3x slower than the native C version.
 
 Convenient interface features are being planned to aid in doing fast substring search and other suffix array tricks. I'd also like to explore extensions to the core algorithm to leverage Julia's distributed arrays, parallelization, and UTF8/16/32 string handling capabilties.
 
