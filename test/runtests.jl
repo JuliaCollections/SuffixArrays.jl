@@ -8,7 +8,7 @@ function test_suffix(args)
         SA = suffixsort(T)
         t = toq()
         println("Sorting '$file' took: $t")
-        @test sufcheck(T,SA) == 0
+        @test sufcheck(T,SA.index) == 0
     end
 end
 
