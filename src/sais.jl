@@ -39,14 +39,6 @@ setindex!(a::IntArray,value,key) = a.a[a.pos + key] = value
  #refactor code to simplify
  #build user interface for string operations
 
-function suffixsort(s)
-    n = length(s)
-    isempty(s) && return [-1]
-    SA = zeros(Int,n);
-    n <= 1 && return SA
-    return sais(s, SA, 0, n, isascii(s) ? 256 : 65536, false)
-end
-
 function getcounts(T,C,n,k)
     for i = 1:k
         C[i] = 0
