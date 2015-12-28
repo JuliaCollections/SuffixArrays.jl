@@ -45,7 +45,7 @@ function getcounts(T,C,n,k)
         C[i] = 0
     end
     for i = 1:n
-        C[T[i]+1] += 1
+        C[Int(T[i])+1] += 1
     end
 end
 
@@ -116,7 +116,7 @@ function sais(T, SA, fs, n, k, isbwt)
         end
         if 1 <= i
             0 <= b && (SA[b+1] = j)
-            b = (B[c1+1] -= 1)
+            b = (B[Int(c1)+1] -= 1)
             j = i-1
             m += 1
             c1 = c0
@@ -196,7 +196,7 @@ function sais(T, SA, fs, n, k, isbwt)
         c1 = T[p+1]
         while true
             c0 = c1
-            q = B[c0+1]
+            q = B[Int(c0)+1]
             while q < j
                 j -= 1
                 SA[j+1] = 0
@@ -230,16 +230,16 @@ function LMSsort(T, SA, C, B, n, k)
     getbuckets(C,B,k,false)
     j = n - 1
     c1 = T[j+1]
-    b = B[c1+1]
+    b = B[Int(c1)+1]
     j -= 1
     SA[b+1] = T[j+1] < c1 ? ~j : j
     b += 1
     for i = 1:n
         if 0 < (j = SA[i])
             if (c0 = T[j+1]) != c1
-                B[c1+1] = b
+                B[Int(c1)+1] = b
                 c1 = c0
-                b = B[c1+1]
+                b = B[Int(c1)+1]
             end
             j -= 1
             SA[b+1] = T[j+1] < c1 ? ~j : j
@@ -259,7 +259,7 @@ function LMSsort(T, SA, C, B, n, k)
             if c0 != c1
                 B[c1+1] = b
                 c1 = c0
-                b = B[c1+1]
+                b = B[Int(c1)+1]
             end
             j -= 1
             b -= 1
@@ -337,7 +337,7 @@ function induceSA(T,SA,C,B,n,k)
     getbuckets(C,B,k,false)
     j = n - 1
     c1 = T[j+1]
-    b = B[c1+1]
+    b = B[Int(c1)+1]
     SA[b+1] = 0 < j && T[j] < c1 ? ~j : j
     b += 1
     for i = 1:n
@@ -346,9 +346,9 @@ function induceSA(T,SA,C,B,n,k)
         if 0 < j
             j -= 1
             if (c0 = T[j+1]) != c1
-                B[c1+1] = b
+                B[Int(c1)+1] = b
                 c1 = c0
-                b = B[c1+1]
+                b = B[Int(c1)+1]
             end
             SA[b+1] = 0 < j && T[j] < c1 ? ~j : j
             b += 1
@@ -362,9 +362,9 @@ function induceSA(T,SA,C,B,n,k)
         if 0 < (j = SA[i])
             j -= 1
             if (c0 = T[j+1]) != c1
-                B[c1+1] = b
+                B[Int(c1)+1] = b
                 c1 = c0
-                b = B[c1+1]
+                b = B[Int(c1)+1]
             end
             b -= 1
             SA[b+1] = j == 0 || T[j] > c1 ? ~j : j
@@ -380,7 +380,7 @@ function computeBWT(T,SA,C,B,n,k)
     getbuckets(C,B,k,false)
     j = n-1
     c1 = T[j+1]
-    b = B[c1+1]
+    b = B[Int(c1)+1]
     SA[b+1] = 0 < j && T[j] < c1 ? ~j : j
     b += 1
     for i = 1:n   
@@ -389,7 +389,7 @@ function computeBWT(T,SA,C,B,n,k)
             c0 = T[j+1]
             SA[i] = ~c0
             if c0 != c1
-                B[c1+1] = b
+                B[Int(c1)+1] = b
                 c1 = c0
                 b = B[c1+1]
             end
@@ -402,16 +402,16 @@ function computeBWT(T,SA,C,B,n,k)
     C == B && getcounts(T,C,n,k)
     getbuckets(C,B,k,true)
     c1 = 0
-    b = B[c1+1]
+    b = B[Int(c1)+1]
     for i = n:-1:1
         if 0 < (j = SA[i])
             j -= 1
             c0 = T[j+1]
             SA[i] = c0
             if c0 != c1
-                B[c1+1] = b
+                B[Int(c1)+1] = b
                 c1 = c0
-                b = B[c1+1]
+                b = B[Int(c1)+1]
             end
             b -= 1
             SA[b+1] = 0 < j && T[j] > c1 ? ~(T[j]) : j
