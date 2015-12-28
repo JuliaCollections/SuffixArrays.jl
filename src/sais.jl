@@ -29,6 +29,7 @@ type IntArray
     a::Array{Int,1}
     pos::Int
 end
+import Base: getindex, setindex!
 getindex(a::IntArray,key) = a.a[a.pos + key]
 setindex!(a::IntArray,value,key) = a.a[a.pos + key] = value
 
