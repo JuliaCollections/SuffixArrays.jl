@@ -256,7 +256,7 @@ function LMSsort(T, SA, C, B, n, k)
     for i = n:-1:1
         if 0 < (j = SA[i])
             c0 = T[j+1]
-            if c0 != c1
+            if Int(c0) != Int(c1)
                 B[c1+1] = b
                 c1 = c0
                 b = B[Int(c1)+1]
