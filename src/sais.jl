@@ -30,8 +30,8 @@ type IntArray
     pos::Int
 end
 import Base: getindex, setindex!
-getindex(a::IntArray,key) = a.a[a.pos + key]
-setindex!(a::IntArray,value,key) = a.a[a.pos + key] = value
+getindex(a::IntArray,key) = a.a[a.pos + Int(key)]
+setindex!(a::IntArray,value,key) = a.a[a.pos + Int(key)] = value
 
 # "banana" = [5 3 1 0 4 2]
 # "banana" = [6, 4, 2, 1, 5, 3]
@@ -256,7 +256,7 @@ function LMSsort(T, SA, C, B, n, k)
     for i = n:-1:1
         if 0 < (j = SA[i])
             c0 = T[j+1]
-            if c0 != c1
+            if Int(c0) != Int(c1)
                 B[c1+1] = b
                 c1 = c0
                 b = B[Int(c1)+1]
