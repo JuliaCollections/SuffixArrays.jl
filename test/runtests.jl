@@ -83,5 +83,5 @@ function walkdir(dir,files)
     return unique(files)
 end
 
-files = walkdir(Pkg.dir("SuffixArrays"),{})
+files = walkdir(dirname(dirname(@__FILE__)),{})
 test_suffix(files)
