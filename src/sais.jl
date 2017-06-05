@@ -361,7 +361,7 @@ function induceSA(T,SA,C,B,n,k)
     for i = n:-1:1
         if 0 < (j = SA[i])
             j -= 1
-            if (c0 = T[j+1]) != c1
+            if Int(c0 = T[j+1]) != Int(c1)
                 B[Int(c1)+1] = b
                 c1 = c0
                 b = B[Int(c1)+1]
