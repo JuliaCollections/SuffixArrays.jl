@@ -3,7 +3,7 @@ using Base.Test
 
 function test_suffix(args)
     for file in args
-        T = open(readall,file)
+        T = open(readstring,file)
         tic()
         SA = suffixsort(T)
         t = toq()
@@ -33,7 +33,7 @@ function sufcheck(T,SA)
         end
     end
     for i = 1:n
-        C[T[i]+1] += 1
+       C[Int(T[i])+1] += 1
     end
     p = 0
     for i = 1:256
@@ -41,8 +41,8 @@ function sufcheck(T,SA)
         C[i] = p
         p += t
     end
-    q = C[T[n]+1]
-    C[T[n]+1] += 1
+    q = C[Int(T[n])+1]
+    C[Int(T[n])+1] += 1
     for i = 1:n
         p = SA[i]
         if 0 < p
@@ -83,5 +83,5 @@ function walkdir(dir,files)
     return unique(files)
 end
 
-files = walkdir(Pkg.dir("SuffixArrays"),{})
+files = walkdir(Pkg.dir("SuffixArrays"),[])
 test_suffix(files)
