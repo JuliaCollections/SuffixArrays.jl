@@ -48,7 +48,7 @@ function sufcheck(T,SA)
         if 0 < p
             p -= 1
             c = T[p+1]
-            t = C[c+1]
+            t = C[Int(c)+1]
         else
             p = n-1
             c = T[p+1]
@@ -59,9 +59,9 @@ function sufcheck(T,SA)
             return -4
         end
         if t != q
-            C[c+1] += 1
-            if n <= C[c+1] || T[SA[C[c+1]+1]+1] != c
-                C[c+1] = -1
+           C[Int(c)+1] += 1
+           if n <= C[Int(c)+1] || T[SA[C[Int(c)+1]+1]+1] != c
+              C[Int(c)+1] = -1
             end
         end
     end
