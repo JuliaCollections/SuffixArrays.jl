@@ -10,9 +10,9 @@ end
 
 function SuffixArray{S}(s::S)
     n = length(s)
-    index = zeros(n < 256 ? Int8 : 
-               n < 65536 ? Int16 : 
-               n < 4294967296 ? Int32 : Int64,n)
+    index = zeros(n <= typemax(Int8)  ? Int8  : 
+                  n <= typemax(Int16) ? Int16 : 
+                  n <= typemax(Int32) ? Int32 : Int64, n)
     return SuffixArray(s,n,index)
 end
 
