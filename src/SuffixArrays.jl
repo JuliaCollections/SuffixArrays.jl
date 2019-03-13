@@ -2,7 +2,7 @@ module SuffixArrays
 
 export suffixsort
 
-struct SuffixArray{S,N} where {S<:AbstractString,N<:Signed}
+struct SuffixArray{S<:AbstractString,N<:Signed}
     string::S
     n::Int
     index::Array{N,1}
