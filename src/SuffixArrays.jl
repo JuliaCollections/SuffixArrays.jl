@@ -2,13 +2,13 @@ module SuffixArrays
 
 export suffixsort
 
-immutable SuffixArray{S<:AbstractString,N<:Signed}
+struct SuffixArray{S,N} where {S<:AbstractString,N<:Signed}
     string::S
     n::Int
     index::Array{N,1}
 end
 
-function SuffixArray{S}(s::S)
+function SuffixArray{S}(s::S) where S
     n = length(s)
     index = zeros(n <= typemax(Int8)  ? Int8  : 
                   n <= typemax(Int16) ? Int16 : 

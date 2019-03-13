@@ -25,7 +25,7 @@
  =#
 
 #= Suffixsorting =#
-type IntArray
+mutable struct IntArray
     a::Array{Int,1}
     pos::Int
 end
