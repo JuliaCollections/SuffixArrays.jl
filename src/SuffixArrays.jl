@@ -8,7 +8,7 @@ struct SuffixArray{S<:AbstractString,N<:Signed}
     index::Array{N,1}
 end
 
-function SuffixArray{S}(s::S) where S
+function SuffixArray(s::S) where S <: AbstractString
     n = length(s)
     index = zeros(n <= typemax(Int8)  ? Int8  : 
                   n <= typemax(Int16) ? Int16 : 
