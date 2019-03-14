@@ -70,6 +70,7 @@ function sufcheck(T,SA)
 end
 
 function walkdir(dir,files)
+    occursin( r"juliamnt", dir ) && return files
     t = readdir(dir)
     for f in t
         f == ".git" && continue
