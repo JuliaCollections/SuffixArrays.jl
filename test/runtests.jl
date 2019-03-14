@@ -69,8 +69,13 @@ function sufcheck(T,SA)
     return 0
 end
 
+function initwalk(dir, files)
+   files = walkdir("$dir/src", files)
+   files = walkdir("$dir/test", files)
+   files
+end
+
 function walkdir(dir,files)
-    occursin( r"juliamnt", dir ) && return files
     t = readdir(dir)
     for f in t
         f == ".git" && continue
@@ -84,5 +89,5 @@ function walkdir(dir,files)
     return unique(files)
 end
 
-files = walkdir(dirname(dirname(@__FILE__)),[])
+files = initwalk(dirname(dirname(@__FILE__)),[])
 test_suffix(files)
