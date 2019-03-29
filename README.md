@@ -6,7 +6,9 @@ A Julia interface to working with [Suffix Arrays](http://en.wikipedia.org/wiki/S
 
 You can use the package by running:
 ```julia
-Pkg.add("SuffixArrays")
+using Pkg
+add("SuffixArrays")
+#Pkg.add("SuffixArrays") for julia prior to v0.7
 using SuffixArrays
 sa = suffixsort("banana")
 sa.index # access the underlying sorted suffix array; returned indices are currently 0-based

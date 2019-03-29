@@ -1,12 +1,12 @@
 using SuffixArrays
-using Base.Test
+using Test
+
+readstring(s) = read(s, String) 
 
 function test_suffix(args)
     for file in args
         T = open(readstring,file)
-        tic()
-        SA = suffixsort(T)
-        t = toq()
+        t = @elapsed SA = suffixsort(T)
         println("Sorting '$file' took: $t")
         @test sufcheck(T,SA.index) == 0
     end
@@ -69,6 +69,12 @@ function sufcheck(T,SA)
     return 0
 end
 
+function initwalk(dir, files)
+   files = walkdir("$dir/src", files)
+   files = walkdir("$dir/test", files)
+   files
+end
+
 function walkdir(dir,files)
     t = readdir(dir)
     for f in t
@@ -83,5 +89,5 @@ function walkdir(dir,files)
     return unique(files)
 end
 
-files = walkdir(dirname(dirname(@__FILE__)),[])
+files = initwalk(dirname(dirname(@__FILE__)),[])
 test_suffix(files)
