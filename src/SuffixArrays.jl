@@ -8,12 +8,12 @@ struct SuffixArray{S<:AbstractString,N<:Signed}
     index::Array{N,1}
 end
 
-function SuffixArray(s::S) where S <: AbstractString
+function SuffixArray(s::S) where {S<:AbstractString}
     n = length(s)
     index = zeros(n <= typemax(Int8)  ? Int8  : 
                   n <= typemax(Int16) ? Int16 : 
                   n <= typemax(Int32) ? Int32 : Int64, n)
-    return SuffixArray(s,n,index)
+    return SuffixArray(s, n, index)
 end
 
 include("sais.jl")
@@ -26,18 +26,14 @@ function suffixsort(s)
     return SA
 end
 
-
-#=contains(haystack, needle)
-
-matchall(substring, s::String)=#
 const MAXCHAR = Char(255)
 
-function lcp2(SA,s)
+function lcp2(SA, s)
     inv = similar(SA)
     lcparr = similar(SA)
     n = length(SA)
     for i = 1:n
-        inv[SA[i]+1] = i-1
+        inv[SA[i]+1] = i - 1
     end
     m = 0
     for i = 1:n
@@ -47,7 +43,7 @@ function lcp2(SA,s)
                 m += 1
             end
             lcparr[inv[i]+1] = m
-            m > 0 && (m-=1)
+            m > 0 && (m -= 1)
         end
     end
     lcparr[1] = -1

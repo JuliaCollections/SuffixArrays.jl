@@ -1,22 +1,22 @@
-using SuffixArrays
 using Test
+using SuffixArrays
 
-readstring(s) = read(s, String) 
+readstring(s) = read(s, String)
 
 function test_suffix(args)
     for file in args
-        T = open(readstring,file)
+        T = open(readstring, file)
         t = @elapsed SA = suffixsort(T)
         println("Sorting '$file' took: $t")
-        @test sufcheck(T,SA.index) == 0
+        @test sufcheck(T, SA.index) == 0
     end
 end
 
-function sufcheck(T,SA)
+function sufcheck(T, SA)
     n = length(T)
     n == 0 && (println("Done."); return 0)
     n < 0 && (println("Invalid length $n"); return -1)
-    C = zeros(Int,256)
+    C = zeros(Int, 256)
     for i = 1:n
         if SA[i] < 0 || n <= SA[i]
             println("Out of range $n")
@@ -33,7 +33,7 @@ function sufcheck(T,SA)
         end
     end
     for i = 1:n
-       C[Int(T[i])+1] += 1
+        C[Int(T[i])+1] += 1
     end
     p = 0
     for i = 1:256
@@ -50,7 +50,7 @@ function sufcheck(T,SA)
             c = T[p+1]
             t = C[Int(c)+1]
         else
-            p = n-1
+            p = n - 1
             c = T[p+1]
             t = q
         end
@@ -59,9 +59,9 @@ function sufcheck(T,SA)
             return -4
         end
         if t != q
-           C[Int(c)+1] += 1
-           if n <= C[Int(c)+1] || T[SA[C[Int(c)+1]+1]+1] != c
-              C[Int(c)+1] = -1
+            C[Int(c)+1] += 1
+            if n <= C[Int(c)+1] || T[SA[C[Int(c)+1]+1]+1] != c
+                C[Int(c)+1] = -1
             end
         end
     end
@@ -70,24 +70,26 @@ function sufcheck(T,SA)
 end
 
 function initwalk(dir, files)
-   files = walkdir("$dir/src", files)
-   files = walkdir("$dir/test", files)
-   files
+    files = walkdir("$dir/src", files)
+    files = walkdir("$dir/test", files)
+    files
 end
 
-function walkdir(dir,files)
+function walkdir(dir, files)
     t = readdir(dir)
     for f in t
         f == ".git" && continue
-        j = joinpath(dir,f)
+        j = joinpath(dir, f)
         if isdir(j)
-            append!(files,walkdir(j,files))
+            append!(files, walkdir(j, files))
         else
-            push!(files,j)
+            push!(files, j)
         end
     end
     return unique(files)
 end
 
-files = initwalk(dirname(dirname(@__FILE__)),[])
-test_suffix(files)
+@testset "source files" begin
+    files = initwalk(dirname(dirname(@__FILE__)), [])
+    test_suffix(files)
+end

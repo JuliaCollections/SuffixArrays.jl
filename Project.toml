@@ -1,0 +1,11 @@
+name = "SuffixArrays"
+uuid = "24f65c1e-0a10-5d3d-8a1f-a83399f3fced"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+julia = "1"
+
+[targets]
+test = ["Test"]
