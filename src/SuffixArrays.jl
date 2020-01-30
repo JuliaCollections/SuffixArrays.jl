@@ -2,14 +2,14 @@ module SuffixArrays
 
 export suffixsort
 
-struct SuffixArray{S<:AbstractString,N<:Signed}
-    string::S
+struct SuffixArray{N<:Signed}
+    string::String
     n::Int
     index::Array{N,1}
 end
 
-function SuffixArray(s::S) where {S<:AbstractString}
-    n = length(s)
+function SuffixArray(s::String)
+    n = ncodeunits(s)
     index = zeros(n <= typemax(Int8)  ? Int8  : 
                   n <= typemax(Int16) ? Int16 : 
                   n <= typemax(Int32) ? Int32 : Int64, n)
@@ -22,7 +22,7 @@ function suffixsort(s)
     isempty(s) && return SA
     SA = SuffixArray(s)
     SA.n <= 1 && return SA
-    SuffixArrays.sais(s, SA.index, 0, SA.n, isascii(s) ? 256 : 65536, false)
+    SuffixArrays.sais(codeunits(s), SA.index, 0, SA.n, 256, false)
     return SA
 end
 
