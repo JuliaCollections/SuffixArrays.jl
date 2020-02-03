@@ -1,14 +1,12 @@
 using Test
 using SuffixArrays
 
-readstring(s) = read(s, String)
-
 function test_suffix(args)
     for file in args
-        T = open(readstring, file)
-        t = @elapsed SA = suffixsort(T)
+        data = codeunits(read(file, String))
+        t = @elapsed suffixes = suffixsort(data, offset=0)
         println("Sorting '$file' took: $t")
-        @test sufcheck(T, SA.index) == 0
+        @test sufcheck(data, suffixes) == 0
     end
 end
 
