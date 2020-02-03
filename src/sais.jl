@@ -24,8 +24,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  =#
 
-const IndexVector = Vector{<:Union{Int8,Int16,Int32,Int64}}
-
 struct IntVector <: AbstractVector{Int}
     vec::Array{Int,1}
     off::Int

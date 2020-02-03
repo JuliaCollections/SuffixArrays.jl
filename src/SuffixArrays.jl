@@ -2,9 +2,11 @@ module SuffixArrays
 
 export suffixsort
 
-include("sais.jl")
-
 const CodeUnits = Union{UInt8,UInt16}
+const IndexTypes = Union{Int8,Int16,Int32,Int64}
+const IndexVector = Vector{<:IndexTypes}
+
+include("sais.jl")
 
 function suffixsort(V::AbstractVector{U}; offset::Integer=1) where {U<:CodeUnits}
     n = length(V)
