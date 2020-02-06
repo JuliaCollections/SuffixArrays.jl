@@ -38,4 +38,4 @@ When generating a suffix array for a string, the suffix indices are in terms of 
 For UTF-8 and UTF-16 this doesn't affect using the suffix array as search index since a valid substring cannot start in the middle of a character anyway.
 In other words, invalid substrings occuring in the suffix array will simply not match.
 
-By default, `suffixsort(v)` produces an array of 1-based indices, but it can be called as `suffixsort(v, 2)` in order to produce an array of 0-based indices, which may be desirable to interface with 0-based libraries (or to save a tiny bit of space).
+By default, `suffixsort(v)` produces an array of 1-based indices, but it can be called as `suffixsort(v, 0)` in order to produce an array of 0-based indices, which may be desirable to interface with 0-based libraries (or to save a tiny bit of space).
