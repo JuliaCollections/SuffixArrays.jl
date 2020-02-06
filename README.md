@@ -8,6 +8,7 @@ The underlying suffix array sorting implementation is a pure Julia port of [sais
 You can use the package by running:
 ```julia
 julia> using SuffixArrays
+
 julia> s = "banana"
 "banana"
 
