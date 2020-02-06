@@ -4,7 +4,7 @@ using SuffixArrays
 function test_suffix(args)
     for file in args
         data = codeunits(read(file, String))
-        t = @elapsed suffixes = suffixsort(data, offset=0)
+        t = @elapsed suffixes = suffixsort(data, 0)
         println("Sorting '$file' took: $t")
         @test sufcheck(data, suffixes) == 0
     end
