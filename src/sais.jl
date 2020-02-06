@@ -24,77 +24,80 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  =#
 
-#= Suffixsorting =#
-mutable struct IntArray
-    a::Array{Int,1}
-    pos::Int
+struct IntVector <: AbstractVector{Int}
+    vec::Array{Int,1}
+    off::Int
 end
-import Base: getindex, setindex!
-getindex(a::IntArray,key) = a.a[a.pos + Int(key)]
-setindex!(a::IntArray,value,key) = a.a[a.pos + Int(key)] = value
+Base.size(v::IntVector) = size(v.vec)
+Base.getindex(v::IntVector, key) = v.vec[v.off+Int(key)]
+Base.setindex!(v::IntVector, value, key) = v.vec[v.off+Int(key)] = value
 
-# "banana" = [5 3 1 0 4 2]
-# "banana" = [6, 4, 2, 1, 5, 3]
+# TODO:
+# - refactor code to simplify
+# - build user interface for string operations
 
-#TODO
- #refactor code to simplify
- #build user interface for string operations
-
-function getcounts(T,C,n,k)
+function getcounts(T::AbstractVector{<:Integer}, C::IntVector, n::Int, k::Int)
     for i = 1:k
         C[i] = 0
     end
     for i = 1:n
-        C[Int(T[i])+1] += 1
+        C[T[i]+1] += 1
     end
 end
 
-function getbuckets(C,B,k,isend)
-    sum = 0
+function getbuckets(C::IntVector, B::IntVector, k::Int, isend::Bool)
+    s = 0
     if isend != false
         for i = 1:k
-            sum += C[i]
-            B[i] = sum
+            s += C[i]
+            B[i] = s
         end
     else
         for i = 1:k
-            sum += C[i]
-            B[i] = sum - C[i]
+            s += C[i]
+            B[i] = s - C[i]
         end
     end
 end
 
-function sais(T, SA, fs, n, k, isbwt)
+function sais(
+    T::AbstractVector{<:Integer},
+    SA::IndexVector,
+    fs::Int,
+    n::Int,
+    k::Int,
+    isbwt::Bool,
+)
     pidx = 0
     flags = 0
     if k <= 256
-        C = IntArray(zeros(Int,k),0)
+        C = IntVector(zeros(Int, k), 0)
         if k <= fs
-            B = IntArray(SA,n + fs - k)
+            B = IntVector(SA, n + fs - k)
             flags = 1
         else
-            B = IntArray(zeros(Int,k),0)
+            B = IntVector(zeros(Int, k), 0)
             flags = 3
         end
     elseif k <= fs
-        C = IntArray(SA,n + fs - k)
+        C = IntVector(SA, n + fs - k)
         if k <= fs - k
-            B = IntArray(SA,n + fs - 2k)
+            B = IntVector(SA, n + fs - 2k)
             flags = 0
         elseif k <= 1024
-            B = IntArray(zeros(Int,k),0)
+            B = IntVector(zeros(Int, k), 0)
             flags = 2
         else
             B = C
             flags = 8
         end
     else
-        C = B = IntArray(zeros(Int,k),0)
+        C = B = IntVector(zeros(Int, k), 0)
         flags = 4 | 8
     end
     # stage 1
-    getcounts(T,C,n,k)
-    getbuckets(C,B,k,true)
+    getcounts(T, C, n, k)
+    getbuckets(C, B, k, true)
     for i = 1:n
         SA[i] = 0
     end
@@ -116,8 +119,8 @@ function sais(T, SA, fs, n, k, isbwt)
         end
         if 1 <= i
             0 <= b && (SA[b+1] = j)
-            b = (B[Int(c1)+1] -= 1)
-            j = i-1
+            b = (B[c1+1] -= 1)
+            j = i - 1
             m += 1
             c1 = c0
             i -= 1
@@ -128,10 +131,10 @@ function sais(T, SA, fs, n, k, isbwt)
         end
     end
     if 1 < m
-        LMSsort(T,SA,C,B,n,k)
-        name = LMSpostproc(T,SA,n,m)
+        LMSsort(T, SA, C, B, n, k)
+        name = LMSpostproc(T, SA, n, m)
     elseif m == 1
-        SA[b+1] = j+1
+        SA[b+1] = j + 1
         name = 1
     else
         name = 0
@@ -147,14 +150,14 @@ function sais(T, SA, fs, n, k, isbwt)
             end
         end
         j = 2m + newfs
-        for i = (m + (n >> 1)):-1:(m+1)
+        for i = (m+(n>>1)):-1:(m+1)
             if SA[i] != 0
                 SA[j] = SA[i] - 1
                 j -= 1
             end
         end
-        RA = IntArray(SA, m + newfs)
-        sais(RA,SA,newfs,m,name,false)
+        RA = IntVector(SA, m + newfs)
+        sais(RA, SA, newfs, m, name, false)
 
         i = n
         j = 2m
@@ -177,26 +180,26 @@ function sais(T, SA, fs, n, k, isbwt)
             end
         end
         for i = 1:m
-            SA[i] = SA[m+SA[i]+1]
+            SA[i] = SA[m + SA[i] + 1]
         end
         if flags & 4 != 0
-            C = B = IntArray(zeros(Int,k),0)
+            C = B = IntVector(zeros(Int, k), 0)
         end
         if flags & 2 != 0
-            B = IntArray(zeros(Int,k),0)
+            B = IntVector(zeros(Int, k), 0)
         end
     end
     # stage 3
-    flags & 8 != 0 && getcounts(T,C,n,k)
+    flags & 8 != 0 && getcounts(T, C, n, k)
     if 1 < m
-        getbuckets(C,B,k,true)
-        i = m-1
+        getbuckets(C, B, k, true)
+        i = m - 1
         j = n
         p = SA[m]
         c1 = T[p+1]
         while true
             c0 = c1
-            q = B[Int(c0)+1]
+            q = B[c0+1]
             while q < j
                 j -= 1
                 SA[j+1] = 0
@@ -218,28 +221,35 @@ function sais(T, SA, fs, n, k, isbwt)
         end
     end
     if isbwt == false
-        induceSA(T,SA,C,B,n,k)
+        induceSA(T, SA, C, B, n, k)
     else
-        pidx = computeBWT(T,SA,C,B,n,k)
+        computeBWT(T, SA, C, B, n, k)
     end
     return SA
 end
 
-function LMSsort(T, SA, C, B, n, k)
-    C == B && getcounts(T,C,n,k)
-    getbuckets(C,B,k,false)
+function LMSsort(
+    T::AbstractVector{<:Integer},
+    SA::IndexVector,
+    C::IntVector,
+    B::IntVector,
+    n::Int,
+    k::Int,
+)
+    C == B && getcounts(T, C, n, k)
+    getbuckets(C, B, k, false)
     j = n - 1
     c1 = T[j+1]
-    b = B[Int(c1)+1]
+    b = B[c1+1]
     j -= 1
     SA[b+1] = T[j+1] < c1 ? ~j : j
     b += 1
     for i = 1:n
         if 0 < (j = SA[i])
             if (c0 = T[j+1]) != c1
-                B[Int(c1)+1] = b
+                B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             j -= 1
             SA[b+1] = T[j+1] < c1 ? ~j : j
@@ -249,33 +259,33 @@ function LMSsort(T, SA, C, B, n, k)
             SA[i] = ~j
         end
     end
-    C == B && getcounts(T,C,n,k)
-    getbuckets(C,B,k,true)
+    C == B && getcounts(T, C, n, k)
+    getbuckets(C, B, k, true)
     c1 = 0
     b = B[c1+1]
     for i = n:-1:1
         if 0 < (j = SA[i])
             c0 = T[j+1]
-            if Int(c0) != Int(c1)
+            if c0 != c1
                 B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             j -= 1
             b -= 1
-            SA[b+1] = T[j+1] > c1 ? ~(j+1) : j
+            SA[b+1] = T[j+1] > c1 ? ~(j + 1) : j
             SA[i] = 0
         end
     end
 end
 
-function LMSpostproc(T,SA,n,m)
+function LMSpostproc(T::AbstractVector{<:Integer}, SA::IndexVector, n::Int, m::Int)
     i = 1
     while (p = SA[i]) < 0
         SA[i] = ~p
         i += 1
     end
-    if i-1 < m
+    if i - 1 < m
         j = i
         i += 1
         while true
@@ -283,7 +293,7 @@ function LMSpostproc(T,SA,n,m)
                 SA[j] = ~p
                 j += 1
                 SA[i] = 0
-                j-1 == m && break
+                j - 1 == m && break
             end
             i += 1
         end
@@ -332,12 +342,19 @@ function LMSpostproc(T,SA,n,m)
     return name
 end
 
-function induceSA(T,SA,C,B,n,k)
-    C == B && getcounts(T,C,n,k)
-    getbuckets(C,B,k,false)
+function induceSA(
+    T::AbstractVector{<:Integer},
+    SA::IndexVector,
+    C::IntVector,
+    B::IntVector,
+    n::Int,
+    k::Int,
+)
+    C == B && getcounts(T, C, n, k)
+    getbuckets(C, B, k, false)
     j = n - 1
     c1 = T[j+1]
-    b = B[Int(c1)+1]
+    b = B[c1+1]
     SA[b+1] = 0 < j && T[j] < c1 ? ~j : j
     b += 1
     for i = 1:n
@@ -346,26 +363,26 @@ function induceSA(T,SA,C,B,n,k)
         if 0 < j
             j -= 1
             if (c0 = T[j+1]) != c1
-                B[Int(c1)+1] = b
+                B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             SA[b+1] = 0 < j && T[j] < c1 ? ~j : j
             b += 1
         end
     end
-    C == B && getcounts(T,C,n,k)
-    getbuckets(C,B,k,true)
+    C == B && getcounts(T, C, n, k)
+    getbuckets(C, B, k, true)
     c1 = 0
     b = B[c1+1]
     for i = n:-1:1
         if 0 < (j = SA[i])
             j -= 1
             c0 = T[j+1]
-            if Int(c0) != Int(c1)
-                B[Int(c1)+1] = b
+            if c0 != c1
+                B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             b -= 1
             SA[b+1] = j == 0 || T[j] > c1 ? ~j : j
@@ -375,22 +392,29 @@ function induceSA(T,SA,C,B,n,k)
     end
 end
 
-function computeBWT(T,SA,C,B,n,k)
+function computeBWT(
+    T::AbstractVector{<:Integer},
+    SA::IndexVector,
+    C::IntVector,
+    B::IntVector,
+    n::Int,
+    k::Int,
+)
     pidx = -1
-    C == B && getcounts(T,C,n,k)
-    getbuckets(C,B,k,false)
-    j = n-1
+    C == B && getcounts(T, C, n, k)
+    getbuckets(C, B, k, false)
+    j = n - 1
     c1 = T[j+1]
-    b = B[Int(c1)+1]
+    b = B[c1+1]
     SA[b+1] = 0 < j && T[j] < c1 ? ~j : j
     b += 1
-    for i = 1:n   
+    for i = 1:n
         if 0 < (j = SA[i])
             j -= 1
             c0 = T[j+1]
             SA[i] = ~c0
             if c0 != c1
-                B[Int(c1)+1] = b
+                B[c1+1] = b
                 c1 = c0
                 b = B[c1+1]
             end
@@ -400,26 +424,26 @@ function computeBWT(T,SA,C,B,n,k)
             SA[i] = ~j
         end
     end
-    C == B && getcounts(T,C,n,k)
-    getbuckets(C,B,k,true)
+    C == B && getcounts(T, C, n, k)
+    getbuckets(C, B, k, true)
     c1 = 0
-    b = B[Int(c1)+1]
+    b = B[c1+1]
     for i = n:-1:1
         if 0 < (j = SA[i])
             j -= 1
             c0 = T[j+1]
             SA[i] = c0
             if c0 != c1
-                B[Int(c1)+1] = b
+                B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             b -= 1
             SA[b+1] = 0 < j && T[j] > c1 ? ~(T[j]) : j
         elseif j != 0
             SA[i] = ~j
         else
-            pidx = i-1
+            pidx = i - 1
         end
     end
     return pidx
