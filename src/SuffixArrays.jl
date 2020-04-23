@@ -1,6 +1,6 @@
 module SuffixArrays
 
-export suffixsort
+export suffixsort, lcp
 
 const CodeUnits = Union{UInt8,UInt16}
 const IndexTypes = Union{Int8,Int16,Int32,Int64}
@@ -38,6 +38,39 @@ end
 
 function suffixsort(s::AbstractString, base::Integer=1)
     return suffixsort(codeunits(s), base)
+end
+
+"""
+    lcp(sa, s[, base])
+
+Compute the longest common prefix (LCP) array from the suffix array `sa`
+associated with sequence `s`.
+
+reference:
+Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its Applications
+Kasai et. al.
+  http://web.cs.iastate.edu/~cs548/references/linear_lcp.pdf
+"""
+function lcp(sa, V::AbstractVector{U}, base::Integer=1) where {U<:CodeUnits}
+    pos = sa .+ (1-base)
+    n = length(pos)
+    lcparr = similar(pos)
+    rank = invperm(pos)
+    h = 0
+    for i in 1:n
+        if rank[i] == 1
+            continue
+        end
+        j = pos[rank[i]-1]
+        maxh = n - max(i, j)
+        while h <= maxh && V[i+h] == V[j+h]
+            h += 1
+        end
+        lcparr[rank[i]] = h
+        h = max(h-1, 0)
+    end
+    lcparr[1] = 0
+    lcparr
 end
 
 end # module
