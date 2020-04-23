@@ -129,3 +129,46 @@ end
     suffixes = [UTF16(codeunits(s)[i:end]) for i in sa]
     @test issorted(suffixes)
 end
+
+function commonprefixlen(s1, s2)
+    h = 0
+    maxh = min(length(s1), length(s2))
+    for i in 1:maxh
+        if s1[i] != s2[i]
+            break
+        end
+        h += 1
+    end
+    h
+end
+
+@testset "Longest common prefix" begin
+    s = rand(0x00:0xff, 100)
+    sa = suffixsort(s)
+    suff = [s[i:end] for i in sa]
+    lcparr = lcp(sa, s)
+    # LCP the hard way
+    lcpref = [commonprefixlen(suff[i], suff[i+1]) for i in 1:length(sa)-1]
+    @test lcparr[1] == 0
+    @test lcparr[2:end] == lcpref
+
+    # retest with base != 1
+    base = 0
+    sa = suffixsort(s, base)
+    suff = [s[1-base+i:end] for i in sa]
+    lcparr = lcp(sa, s, base)
+    @test lcparr[1] == 0
+    @test lcparr[2:end] == lcpref
+
+    # sequence where common prefix reaches the end
+    s = [0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03]
+    sa = suffixsort(s)
+    suff = [s[i:end] for i in sa]
+    lcparr = lcp(sa, s)
+    # LCP the hard way
+    lcpref = [commonprefixlen(suff[i], suff[i+1]) for i in 1:length(sa)-1]
+    @test lcparr[1] == 0
+    @test lcparr[2:end] == lcpref
+end
+
+:done
