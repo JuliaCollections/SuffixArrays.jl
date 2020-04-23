@@ -170,3 +170,15 @@ end
     @test lcparr[1] == 0
     @test lcparr[2:end] == lcpref
 end
+
+@testset "Issue #15 fix" begin
+    s = join(rand('a':'z', 10000)) * '\$'
+    sa = suffixsort(s)
+    suffixes = [String(codeunits(s)[i:end]) for i in sa]
+    @test issorted(suffixes)
+
+    utext = rand(0x0001:0x0020, 4000)
+    sa = suffixsort(utext)
+    suffixes = [utext[i:end] for i in sa]
+    @test issorted(suffixes)
+end
