@@ -28,7 +28,7 @@ struct IntVector <: AbstractVector{Int}
     vec::Array{Int,1}
     off::Int
 end
-Base.size(v::IntVector) = size(v.vec)
+Base.size(v::IntVector) = (length(v.vec)-v.off,)
 Base.getindex(v::IntVector, key) = v.vec[v.off+Int(key)]
 Base.setindex!(v::IntVector, value, key) = v.vec[v.off+Int(key)] = value
 
