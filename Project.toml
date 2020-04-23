@@ -1,7 +1,7 @@
 name = "SuffixArrays"
 uuid = "24f65c1e-0a10-5d3d-8a1f-a83399f3fced"
 authors = ["Jacob Quinn <quinn.jacobd@gmail.com>", "Stefan Karpinski <stefan@karpinski.org>"]
-version = "0.3.0"
+version = "1.0.0"
 
 [compat]
 julia = "1"
