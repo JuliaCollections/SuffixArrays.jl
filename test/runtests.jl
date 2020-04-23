@@ -170,5 +170,3 @@ end
     @test lcparr[1] == 0
     @test lcparr[2:end] == lcpref
 end
-
-:done
