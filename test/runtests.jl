@@ -151,14 +151,15 @@ end
     lcpref = [commonprefixlen(suff[i], suff[i+1]) for i in 1:length(sa)-1]
     @test lcparr[1] == 0
     @test lcparr[2:end] == lcpref
+    @test typeof(lcparr) == typeof(sa)
 
     # retest with base != 1
     base = 0
     sa = suffixsort(s, base)
-    suff = [s[1-base+i:end] for i in sa]
     lcparr = lcp(sa, s, base)
     @test lcparr[1] == 0
     @test lcparr[2:end] == lcpref
+    @test typeof(lcparr) == typeof(sa)
 
     # sequence where common prefix reaches the end
     s = [0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03]
@@ -169,6 +170,7 @@ end
     lcpref = [commonprefixlen(suff[i], suff[i+1]) for i in 1:length(sa)-1]
     @test lcparr[1] == 0
     @test lcparr[2:end] == lcpref
+    @test typeof(lcparr) == typeof(sa)
 end
 
 @testset "Issue #15 fix" begin
