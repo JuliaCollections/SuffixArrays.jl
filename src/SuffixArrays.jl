@@ -52,7 +52,8 @@ Kasai et. al.
   http://web.cs.iastate.edu/~cs548/references/linear_lcp.pdf
 """
 function lcp(sa, V::AbstractVector{U}, base::Integer=1) where {U<:CodeUnits}
-    pos = sa .+ (1-base)
+    T = eltype(sa)
+    pos = sa .+ T(1-base)
     n = length(pos)
     lcparr = similar(pos)
     rank = invperm(pos)
