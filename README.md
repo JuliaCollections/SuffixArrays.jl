@@ -1,6 +1,6 @@
 # SuffixArrays
 
-[![Build Status](https://travis-ci.org/JuliaCollections/SuffixArrays.jl.svg?branch=master)](https://travis-ci.org/JuliaCollections/SuffixArrays.jl)
+[![CI](https://github.com/JuliaCollections/SuffixArrays.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaCollections/SuffixArrays.jl/actions/workflows/CI.yml)
 
 A Julia package for computing [Suffix Arrays](http://en.wikipedia.org/wiki/Suffix_array).
 The underlying suffix array sorting implementation is a pure Julia port of [sais](https://sites.google.com/site/yuta256/sais), by Yuta Mori.
