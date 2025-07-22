@@ -184,3 +184,12 @@ end
     suffixes = [utext[i:end] for i in sa]
     @test issorted(suffixes)
 end
+
+@testset "Test memory consumption" begin
+    # On a random UInt8 string, with UInt32 indices, SA-IS should allocate ~4n bytes.
+    N = 10 * 1024^2             # 10 MiB
+    s = rand(UInt8, N)
+    # Avoid allocations from compilation
+    suffixsort(s)
+    @test (@allocated suffixsort(s)) < 4N * 1.05
+end

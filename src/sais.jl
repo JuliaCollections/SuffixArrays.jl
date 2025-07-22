@@ -24,19 +24,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  =#
 
-struct IntVector <: AbstractVector{Int}
-    vec::Array{Int,1}
-    off::Int
-end
-Base.size(v::IntVector) = (length(v.vec)-v.off,)
-Base.getindex(v::IntVector, key) = v.vec[v.off+Int(key)]
-Base.setindex!(v::IntVector, value, key) = v.vec[v.off+Int(key)] = value
-
-# TODO:
-# - refactor code to simplify
-# - build user interface for string operations
-
-function getcounts(T::AbstractVector{<:Integer}, C::IntVector, n::Int, k::Int)
+function getcounts(T::AbstractVector{<:Integer}, C::AbstractVector{<:Integer}, n::Int, k::Int)
     for i = 1:k
         C[i] = 0
     end
@@ -45,7 +33,7 @@ function getcounts(T::AbstractVector{<:Integer}, C::IntVector, n::Int, k::Int)
     end
 end
 
-function getbuckets(C::IntVector, B::IntVector, k::Int, isend::Bool)
+function getbuckets(C::AbstractVector{<:Integer}, B::AbstractVector{<:Integer}, k::Int, isend::Bool)
     s = 0
     if isend != false
         for i = 1:k
@@ -71,28 +59,28 @@ function sais(
     pidx = 0
     flags = 0
     if k <= 256
-        C = IntVector(zeros(Int, k), 0)
+        C = zeros(Int, k)
         if k <= fs
-            B = IntVector(SA, n + fs - k)
+            B = @view SA[n+fs-k+1:end]
             flags = 1
         else
-            B = IntVector(zeros(Int, k), 0)
+            B = zeros(Int, k)
             flags = 3
         end
     elseif k <= fs
-        C = IntVector(SA, n + fs - k)
+        C = @view SA[n+fs-k+1:end]
         if k <= fs - k
-            B = IntVector(SA, n + fs - 2k)
+            B = @view SA[n+fs-2k+1:end]
             flags = 0
         elseif k <= 1024
-            B = IntVector(zeros(Int, k), 0)
+            B = zeros(Int, k)
             flags = 2
         else
             B = C
             flags = 8
         end
     else
-        C = B = IntVector(zeros(Int, k), 0)
+        C = B = zeros(Int, k)
         flags = 4 | 8
     end
     # stage 1
@@ -156,7 +144,7 @@ function sais(
                 j -= 1
             end
         end
-        RA = IntVector(SA, m + newfs)
+        RA = @view SA[m+newfs+1:end]
         sais(RA, SA, newfs, m, name, false)
 
         i = n
@@ -183,10 +171,10 @@ function sais(
             SA[i] = SA[m + SA[i] + 1]
         end
         if flags & 4 != 0
-            C = B = IntVector(zeros(Int, k), 0)
+            C = B = zeros(Int, k)
         end
         if flags & 2 != 0
-            B = IntVector(zeros(Int, k), 0)
+            B = zeros(Int, k)
         end
     end
     # stage 3
@@ -231,8 +219,8 @@ end
 function LMSsort(
     T::AbstractVector{<:Integer},
     SA::IndexVector,
-    C::IntVector,
-    B::IntVector,
+    C::AbstractVector{<:Integer},
+    B::AbstractVector{<:Integer},
     n::Int,
     k::Int,
 )
@@ -345,8 +333,8 @@ end
 function induceSA(
     T::AbstractVector{<:Integer},
     SA::IndexVector,
-    C::IntVector,
-    B::IntVector,
+    C::AbstractVector{<:Integer},
+    B::AbstractVector{<:Integer},
     n::Int,
     k::Int,
 )
@@ -395,8 +383,8 @@ end
 function computeBWT(
     T::AbstractVector{<:Integer},
     SA::IndexVector,
-    C::IntVector,
-    B::IntVector,
+    C::AbstractVector{<:Integer},
+    B::AbstractVector{<:Integer},
     n::Int,
     k::Int,
 )
